@@ -1,1 +1,1 @@
-Este projeto foi desenvolvido durante a matéria de Métodos Numéricos da faculdade. O código foi feito em Python e se baseia no calculo de regressão linear. 
+Desenvolvimento de aplicação em Python para análise estatística de dados, incluindo cálculo do coeficiente de correlação de Pearson, coeficiente de determinação (R²) e regressão linear, além de geração de tabelas e gráficos de dispersão com reta de regressão utilizando NumPy, Pandas e Matplotlib.
