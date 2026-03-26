@@ -1,0 +1,131 @@
+import numpy as np              # Biblioteca para cálculos numéricos
+import pandas as pd            # Biblioteca para manipulação de dados (tabelas)
+import matplotlib.pyplot as plt # Biblioteca para gráficos
+
+# Função para calcular o coeficiente de correlação de Pearson
+def pearson_correlation(x, y):
+    # Calcula o coeficiente de correlação entre dois conjuntos de dados
+
+    n = len(x)                          # Número de elementos
+    sum_x = np.sum(x)                   # Soma dos valores de X
+    sum_y = np.sum(y)                   # Soma dos valores de Y
+    sum_xy = np.sum(x * y)              # Soma dos produtos X*Y
+    sum_x_squared = np.sum(x ** 2)      # Soma dos quadrados de X
+    sum_y_squared = np.sum(y ** 2)      # Soma dos quadrados de Y
+    
+    # Fórmula do coeficiente de Pearson
+    numerator = (n * sum_xy) - (sum_x * sum_y)
+    denominator = np.sqrt((n * sum_x_squared - sum_x ** 2) * (n * sum_y_squared - sum_y ** 2))
+    
+    correlation_coefficient = numerator / denominator
+    
+    # Retorna também valores auxiliares para reutilização
+    return correlation_coefficient, sum_x, sum_y, sum_xy, sum_x_squared, sum_y_squared
+
+
+# Função para calcular o coeficiente de determinação (R²)
+def coefficient_of_determination(x, y):
+    # Usa o coeficiente de Pearson
+    correlation_coefficient, sum_x, sum_y, sum_xy, sum_x_squared, sum_y_squared = pearson_correlation(x, y)
+    
+    r_squared = correlation_coefficient ** 2 * 100  # Em porcentagem
+    
+    return r_squared, sum_x, sum_y, sum_xy, sum_x_squared, sum_y_squared
+
+
+# Função para calcular a reta de regressão linear
+def regression_line(x, y):
+    correlation_coefficient, sum_x, sum_y, sum_xy, sum_x_squared, sum_y_squared = pearson_correlation(x, y)
+    
+    # Coeficiente angular (inclinação)
+    slope = correlation_coefficient * np.std(y) / np.std(x)
+    
+    # Coeficiente linear (intercepto)
+    intercept = np.mean(y) - slope * np.mean(x)
+    
+    return slope, intercept
+
+
+# Função para formatar a equação da reta
+def format_equation(slope, intercept):
+    
+    if intercept >= 0:
+        return f"y = {slope:.2f}x + {intercept:.2f}"
+    else:
+        return f"y = {slope:.2f}x - {-intercept:.2f}"
+
+
+# Função principal
+def main():
+    
+    # Entrada dos valores de X
+    x_values = input("Insira os valores de X separados por vírgula: ")
+    x = np.array([float(val.strip()) for val in x_values.split(",")])
+    
+    # Entrada dos valores de Y
+    y_values = input("Insira os valores de Y separados por vírgula: ")
+    y = np.array([float(val.strip()) for val in y_values.split(",")])
+    
+    # Verificação de consistência
+    if len(x) != len(y):
+        print("Erro: Os arrays de X e Y devem ter o mesmo comprimento.")
+        return
+    
+    # Número de casas decimais
+    decimal_places = int(input("Insira o número de casas decimais desejado: "))
+    
+    # Identificação das variáveis
+    print("X: Variável independente")
+    print("Y: Variável dependente")
+    
+    # Cálculo das somas
+    n = len(x)
+    sum_x = np.sum(x)
+    sum_y = np.sum(y)
+    sum_xy = np.sum(x * y)
+    sum_x_squared = np.sum(x ** 2)
+    sum_y_squared = np.sum(y ** 2)
+    
+    # Exibe o sistema antes de resolver
+    print("\nSistema antes de resolver:")
+    print("n =", n)
+    print("ΣX:", sum_x)
+    print("ΣY:", sum_y)
+    print("ΣXY:", sum_xy)
+    print("ΣX²:", sum_x_squared)
+    print("ΣY²:", sum_y_squared)
+    
+    # Criação de tabela com pandas
+    df = pd.DataFrame({"X": x, "Y": y})
+    print("\nTabela:")
+    print(df)
+    
+    # Correlação de Pearson
+    correlation_coefficient, *_ = pearson_correlation(x, y)
+    print("\nCorrelação de Pearson:", round(correlation_coefficient, decimal_places))
+    
+    # Coeficiente de determinação
+    r_squared, *_ = coefficient_of_determination(x, y)
+    print("Coeficiente de determinação (R²):", round(r_squared, decimal_places), "%")
+    
+    # Regressão linear
+    slope, intercept = regression_line(x, y)
+    equation = format_equation(slope, intercept)
+    
+    print("\nEquação da reta:", equation)
+    
+    # Gráfico
+    plt.figure(figsize=(8, 6))
+    plt.scatter(x, y, color='blue', label='Dados')
+    plt.plot(x, slope * x + intercept, color='red', label='Regressão')
+    plt.xlabel('X')
+    plt.ylabel('Y')
+    plt.title('Dispersão com Regressão Linear')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+
+# Executa o programa
+if __name__ == "__main__":
+    main()
